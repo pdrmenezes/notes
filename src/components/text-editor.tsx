@@ -15,9 +15,11 @@ export function Editor() {
   });
 
   return (
+    <main className="h-full bg-[#24292E] p-4 overflow-auto">
     <EditorContent
       editor={editor}
-      className="prose prose-invert mx-auto max-w-screen-lg pt-8"
+      className="prose prose-invert mx-auto max-w-screen-lg pt-4"
     />
+    </main>
   );
 }

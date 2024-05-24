@@ -1,15 +1,5 @@
 // import { useRef } from "react";
-import { EditorPane } from "./components/editor-pane";
-
-const NOTES = [
-  "personal",
-  "personal.ideas",
-  "personal.trips",
-  "personal.plans",
-  "work",
-  "work.mei",
-  "work.projects",
-];
+import { EditorWindow } from "./components/editor-window";
 
 function App() {
   // const editorRef = useRef<MDXEditorMethods>(null);
@@ -25,8 +15,8 @@ function App() {
   // }
 
   return (
-    <div className="min-h-screen content-center bg-gray-950 p-8">
-      <EditorPane />
+    <>
+      <EditorWindow />
       {/* <div className="shadow-sm w-[80vw] h-[80vh] rounded-xl border-black flex mx-auto max-h-screen max-w-screen bg-[#24292E] text-white">
         <div className="w-1/5 shrink-0 border-r-1 border-r-slate-600 p-4 bg-[#1F2428]">
           <p className="font-bold text-lg">
@@ -71,7 +61,7 @@ function App() {
           />
         </div>
       </div> */}
-    </div>
+    </>
   );
 }
 
