@@ -8,4 +8,14 @@ export const INITIAL_CONTENT = `<h1>Meu Template</h1>
   consequuntur corporis eum voluptatum, beatae quis.
 </p>
 <a href="https://www.pdrmenezes.com">My website</a>
+
+<pre>
+  <code class="language-typescript">
+    // I can also handle something like Typescript code
+    const obj:Record<any, number> = {
+      "cat": 1,
+      2: 2
+    }
+  </code>
+</pre>
 `;
