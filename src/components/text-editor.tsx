@@ -1,7 +1,7 @@
 import { BubbleMenu, useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { INITIAL_CONTENT } from "../constants/initial-editor-content";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { INITIAL_CONTENT } from "../constants/initial-editor-content";
 import { common, createLowlight } from "lowlight";
 import "highlight.js/styles/github-dark.css";
 import {
@@ -17,12 +17,19 @@ const lowlight = createLowlight(common);
 export function Editor() {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false,
+      }),
       CodeBlockLowlight.configure({
         lowlight,
       }),
     ],
     content: INITIAL_CONTENT,
+    onUpdate(editor) {
+      // Save content to new file/db
+      const editorContent = editor.editor.getJSON();
+      console.log(editorContent);
+    },
     editorProps: {
       attributes: {
         class: "outline-none",

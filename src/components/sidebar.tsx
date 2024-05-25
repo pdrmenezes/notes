@@ -17,7 +17,7 @@ export function Sidebar() {
         </p>
         <div id="file-list">
           {NOTES.map((note) => (
-            <p
+            <p key={note}
               className={`cursor-pointer text-slate-400 hover:bg-[#282E34] ${note.includes(".") ? "pl-4" : "pl-2"}`}
             >
               {note}
