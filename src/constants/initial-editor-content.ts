@@ -1,4 +1,4 @@
-export const INITIAL_CONTENT = `<h1>Meu Template</h1>
+export const INITIAL_CONTENT = `<h1>H1 Title</h1>
 <p>
   Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae
   laborum rerum sequi vitae placeat maxime, reiciendis ipsum iusto
@@ -7,7 +7,7 @@ export const INITIAL_CONTENT = `<h1>Meu Template</h1>
   voluptate voluptatibus? Quas nulla officiis pariatur autem? Alias optio
   consequuntur corporis eum voluptatum, beatae quis.
 </p>
-<a href="https://www.pdrmenezes.com">My website</a>
+<p>The second paragraph dillema.</p>
 
 <pre>
   <code class="language-typescript">
