@@ -16,7 +16,28 @@ export function Sidebar() {
   return (
     <aside className="h-full border-r border-r-neutral-700 pb-4 pl-8 pr-4 pt-8 font-mono">
       <div className="flex flex-col gap-4">
-        <div className="flex w-full gap-2">
+        <div className="flex flex-col w-full gap-4">
+          <div className="flex gap-2 self-end">
+            <button
+              title="New file"
+              className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
+            >
+              <VscNewFile size={12} />
+            </button>
+            <button
+              title="New folder"
+              className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
+            >
+              <VscNewFolder size={12} />
+            </button>
+            <button
+              title="Collapse folders"
+              className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
+              onClick={() => setOpenDirectories([])}
+            >
+              <TbCopyMinus size={12} />
+            </button>
+          </div>
           <form id="search-form" role="search">
             <input
               id="q"
@@ -27,24 +48,6 @@ export function Sidebar() {
               name="q"
             />
           </form>
-          <button
-            title="New file"
-            className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
-          >
-            <VscNewFile size={12} />
-          </button>
-          <button
-            title="New folder"
-            className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
-          >
-            <VscNewFolder size={12} />
-          </button>
-          <button
-            title="Collapse folders"
-            className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800"
-          >
-            <TbCopyMinus size={12} />
-          </button>
         </div>
 
         <div className="flex flex-col gap-4">
