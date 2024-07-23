@@ -16,3 +16,8 @@ A simple markdown notes app. Portable, self-hosted, (hopefully soon) multi-platf
 
 ### Motivation
 Just wanted to own my notes, access them anywhere with a simple UI.
+
+### To do
+
+- Implement saving files to Session Storage in demo branch
+- Implement saving files to db for personal use (SQLite?)
