@@ -5,14 +5,14 @@ import { BiChevronRight } from "react-icons/bi";
 export function BreadCrumbs({ paths }: { paths: string[] }) {
   if (!paths.length) {
     return (
-      <div className="inline-flex w-full items-center gap-2 border-b border-b-neutral-700 pb-4 font-mono text-neutral-500">
+      <div className="flex w-full items-center gap-2 border-b border-b-neutral-700 pb-4 font-mono text-neutral-500">
         <p className="cursor-pointer hover:text-neutral-300">new file</p>
       </div>
     );
   }
 
   return (
-    <div className="inline-flex w-full items-center gap-2 border-b border-b-neutral-700 pb-4 font-mono text-neutral-500">
+    <div className="flex w-full items-center gap-2 border-b border-b-neutral-700 pb-4 font-mono text-neutral-500">
       {paths.map((path, index, paths) =>
         index === 0 ? (
           <Link
@@ -20,19 +20,21 @@ export function BreadCrumbs({ paths }: { paths: string[] }) {
             href={`/${path}`}
             className="cursor-pointer hover:text-neutral-300"
           >
-            {path}
+            {path.split("-").join(" ")}
           </Link>
         ) : (
           <React.Fragment key={path}>
-            <BiChevronRight size={18} className="text-neutral-500" />
+            <BiChevronRight size={18} className="flex-shrink-0 ext-neutral-500" />
             <Link
-              href={`/${paths.join("/")}`}
-              className="cursor-pointer hover:text-neutral-300"
+              href={`/${paths.slice(0, index + 1).join("/")}`}
+              className={`cursor-pointer hover:text-neutral-300 ${
+                index + 1 === paths.length ? "truncate" : ""
+              }`}
             >
-              {path}
+              {path.split("-").join(" ")}
             </Link>
           </React.Fragment>
-        ),
+        )
       )}
     </div>
   );
