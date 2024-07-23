@@ -40,7 +40,6 @@ export function TextEditor({ content }: { content: string }) {
 
   return (
     <main className="h-full overflow-auto">
-      <span className="w-full border-b-4 border-b-neutral-500"></span>
       <EditorContent
         editor={editor}
         className="prose prose-invert mx-auto max-w-screen-lg pt-4"
