@@ -1,4 +1,5 @@
 "use client";
+
 import { defaultEditorContent } from "@/lib/content";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import {
@@ -11,7 +12,7 @@ import {
 import StarterKit from "@tiptap/starter-kit";
 import "highlight.js/styles/github-dark.css";
 import { common, createLowlight } from "lowlight";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   RxCode,
   RxFontBold,
@@ -32,21 +33,26 @@ const extensions = [
 ];
 
 export function TextEditor({ path }: { path: string }) {
-  const localStorageContent = window.localStorage.getItem(
-    `notes_${path}-editor-content`
-  );
-  const initialContent = localStorageContent
-    ? JSON.parse(localStorageContent)
-    : defaultEditorContent;
+  const initialContent = () => {
+    let data;
+    if (typeof window !== "undefined") {
+      let localStorageContent = localStorage.getItem(
+        `notes_${path}-editor-content`
+      );
+      data = localStorageContent ? JSON.parse(localStorageContent) : undefined;
+    }
+    if (!data) return defaultEditorContent;
+    return data;
+  };
 
-  const [content, setContent] = useState<JSONContent>(initialContent);
+  const [content] = useState<JSONContent>(initialContent);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [charsCount, setCharsCount] = useState(0);
 
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
       const json = editor.getJSON();
-      window.localStorage.setItem(
+      localStorage.setItem(
         `notes_${path}-editor-content`,
         JSON.stringify(json)
       );
@@ -57,8 +63,8 @@ export function TextEditor({ path }: { path: string }) {
 
   const editor = useEditor({
     extensions: extensions,
-    content: content,
     immediatelyRender: false,
+    content,
     onUpdate({ editor }) {
       // Save content to new file/db
       setSaveStatus("unsaved");
@@ -71,15 +77,6 @@ export function TextEditor({ path }: { path: string }) {
       },
     },
   });
-
-  useEffect(() => {
-    const editorContent = window.localStorage.getItem(`${path}-editor-content`);
-    if (editorContent) {
-      setContent(JSON.parse(editorContent));
-    } else {
-      setContent(defaultEditorContent);
-    }
-  }, []);
 
   return (
     <section className="h-full overflow-auto">
