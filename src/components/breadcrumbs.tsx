@@ -24,7 +24,7 @@ export function BreadCrumbs({ paths }: { paths: string[] }) {
           </Link>
         ) : (
           <React.Fragment key={path}>
-            <BiChevronRight size={18} className="flex-shrink-0 ext-neutral-500" />
+            <BiChevronRight size={18} className="shrink-0 text-neutral-500" />
             <Link
               href={`/${paths.slice(0, index + 1).join("/")}`}
               className={`cursor-pointer hover:text-neutral-300 ${

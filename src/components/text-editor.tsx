@@ -73,7 +73,7 @@ export function TextEditor({ path }: { path: string }) {
     },
     editorProps: {
       attributes: {
-        class: "focus:outline-none h-screen",
+        class: "focus:outline-hidden h-screen",
       },
     },
   });
@@ -82,7 +82,7 @@ export function TextEditor({ path }: { path: string }) {
     <section className="h-full overflow-auto">
       <EditorContent
         editor={editor}
-        className="prose prose-invert mx-auto max-w-screen-lg pt-4"
+        className="prose prose-invert mx-auto max-w-(--breakpoint-lg) pt-4"
       />
       <div className="absolute right-5 top-5 z-10 rounded-lg border border-neutral-700 text-neutral-500 px-2 py-1 text-sm ">
         {saveStatus}

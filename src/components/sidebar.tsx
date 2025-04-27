@@ -39,7 +39,7 @@ export function Sidebar() {
           {/* TODO: filter folders & files */}
             <input
               id="q"
-              className="w-full rounded-sm border-b border-neutral-500 bg-transparent p-1 text-sm focus-within:border-neutral-400 focus-within:outline-none"
+              className="w-full rounded-xs border-b border-neutral-500 bg-transparent p-1 text-sm focus-within:border-neutral-400 focus-within:outline-hidden"
               aria-label="Search contacts"
               placeholder="Search"
               type="search"

@@ -39,12 +39,12 @@ export function FileNode({ fileNode }: FileNodeProps) {
         {fileNode.isDirectory && fileNode.nodes ? (
           <BiChevronRight
             size={18}
-            className={`text-neutral-500 flex-shrink-0 ${
+            className={`text-neutral-500 shrink-0 ${
               isOpen ? "rotate-90" : ""
             }`}
           />
         ) : (
-          <BiFileBlank size={18} className="text-neutral-500 flex-shrink-0" />
+          <BiFileBlank size={18} className="text-neutral-500 shrink-0" />
         )}
         <p className="truncate">{fileNode.name}</p>
       </span>
