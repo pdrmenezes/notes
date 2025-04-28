@@ -17,7 +17,13 @@ import {
 } from "@/lib/file-management";
 import { ChevronRight, File } from "lucide-react";
 import { redirect, usePathname, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Dialog, DialogState } from "./dialog";
 
 export type FileTree = {
@@ -38,12 +44,20 @@ export type FileNode = {
 
 type FileNodeProps = {
   fileNode: FileNode;
+  rootFoldersOpen: Record<number, boolean>;
+  setRootFoldersOpen: Dispatch<SetStateAction<Record<number, boolean>>>;
 };
 
-export function FileNode({ fileNode }: FileNodeProps) {
+export function FileNode({
+  fileNode,
+  rootFoldersOpen,
+  setRootFoldersOpen,
+}: FileNodeProps) {
   const router = useRouter();
   const { fileTree, updateFileTree } = useContext(FileTreeContext);
-  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(
+    rootFoldersOpen[fileNode.id] ?? false
+  );
   const [dialogState, setDialogState] = useState<DialogState>({
     isOpen: false,
     type: null,
@@ -51,6 +65,13 @@ export function FileNode({ fileNode }: FileNodeProps) {
   });
 
   const pathname = usePathname();
+  const isRootFolder = fileNode.parentDirectory === undefined;
+
+  useEffect(() => {
+    if (isRootFolder) {
+      setIsDirectoryOpen(rootFoldersOpen[fileNode.id] ?? false);
+    }
+  }, [rootFoldersOpen, fileNode.id, isRootFolder]);
 
   const handleCreateFile = () => {
     setDialogState({ isOpen: true, type: "newFile", inputValue: "" });
@@ -92,14 +113,12 @@ export function FileNode({ fileNode }: FileNodeProps) {
       }
     } else if (dialogState.type === "rename" && dialogState.inputValue) {
       const nodePath = getPathFromNode(fileNode);
-
       const newTree = renameNode(
         fileTree,
         nodePath,
         fileNode.name,
         dialogState.inputValue
       );
-
       updateFileTree(newTree);
 
       const currentUrl = window.location.pathname.substring(1);
@@ -135,8 +154,18 @@ export function FileNode({ fileNode }: FileNodeProps) {
             onClick={() => {
               if (!fileNode.isDirectory) {
                 router.push(`/${getUrlPathFromNode(fileNode)}`);
+                return;
               }
-              setIsDirectoryOpen((prev) => !prev);
+
+              const newIsOpen = !isDirectoryOpen;
+              setIsDirectoryOpen(newIsOpen);
+
+              if (isRootFolder) {
+                setRootFoldersOpen((prev) => ({
+                  ...prev,
+                  [fileNode.id]: newIsOpen,
+                }));
+              }
             }}
           >
             {fileNode.isDirectory && fileNode.nodes ? (
@@ -196,7 +225,12 @@ export function FileNode({ fileNode }: FileNodeProps) {
           {fileNode.nodes &&
             fileNode.nodes?.length > 0 &&
             fileNode?.nodes?.map((node) => (
-              <FileNode fileNode={node} key={node.id} />
+              <FileNode
+                fileNode={node}
+                key={node.id}
+                rootFoldersOpen={rootFoldersOpen}
+                setRootFoldersOpen={setRootFoldersOpen}
+              />
             ))}
         </ul>
       )}
