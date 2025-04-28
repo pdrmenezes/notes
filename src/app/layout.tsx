@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
+import { FileTreeProvider } from "@/contexts/FileTreeContext";
+import type { Metadata } from "next";
 import { Roboto_Mono } from "next/font/google";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Notes",
@@ -22,8 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto_mono.className}>
         <main className="mx-auto grid h-screen w-screen grid-cols-[18rem_1fr] bg-neutral-950">
-          <Sidebar />
-          {children}
+          <FileTreeProvider>
+            <Sidebar />
+            {children}
+          </FileTreeProvider>
         </main>
       </body>
     </html>
