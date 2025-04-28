@@ -4,7 +4,7 @@ import { FileTreeContext } from "@/contexts/FileTreeContext";
 import { defaultEditorContent } from "@/lib/content";
 import {
   findNodeByUrlPath,
-  getNoteContent,
+  getFileContent,
   getPathFromNode,
   saveNoteContent,
 } from "@/lib/file-management";
@@ -55,8 +55,7 @@ export function TextEditor({ path }: { path: string }) {
 
     if (!actualPath) return defaultEditorContent;
 
-    const noteContent = getNoteContent(actualPath || path);
-    // TODO: add loading state to avoid replacing the content with the default one
+    const noteContent = getFileContent(actualPath || path);
     return noteContent || defaultEditorContent;
   };
 

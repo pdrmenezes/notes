@@ -321,7 +321,8 @@ export function findNodeByUrlPath(
 export function getFileContent(path: string): any {
   if (typeof window === "undefined") return null;
 
-  const node = findNodeByPath(getFileTree(), path);
+  const tree = getFileTree();
+  const node = findNodeByPath(tree, path);
   return node && !node.isDirectory && node.data ? node.data.content : null;
 }
 
@@ -337,10 +338,6 @@ export function saveNoteContent(path: string, content: any): void {
 
     saveFileTreeToLocalStorage(tree);
   }
-}
-
-export function getNoteContent(path: string): any {
-  return getFileContent(path);
 }
 
 export function getStorage() {

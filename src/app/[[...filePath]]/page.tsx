@@ -1,6 +1,5 @@
 import { BreadCrumbs } from "@/components/breadcrumbs";
-import { TextEditor } from "@/components/text-editor";
-import { Suspense } from "react";
+import { ContentPanel } from "@/components/content-panel";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -19,9 +18,7 @@ export default async function FilePage({ params }: Props) {
   return (
     <section className="flex flex-col p-8 pb-0 truncate">
       <BreadCrumbs paths={filePath || []} />
-      <Suspense fallback={<p className="pt-8">Loading editor...</p>}>
-        <TextEditor path={path} />
-      </Suspense>
+      <ContentPanel path={path} />
     </section>
   );
 }
