@@ -38,7 +38,11 @@ export function BreadCrumbs({ paths }: { paths: string[] }) {
           <Link
             key={paths[index]}
             href={`/${nodeUrlPath}`}
-            className="cursor-pointer hover:text-neutral-300"
+            className={`cursor-pointer hover:text-neutral-100 ${
+              index + 1 === paths.length
+                ? "text-neutral-500 pointer-events-none"
+                : "text-neutral-300"
+            }`}
           >
             {node ? node.name : paths[index].split("-").join(" ")}
           </Link>
@@ -47,9 +51,11 @@ export function BreadCrumbs({ paths }: { paths: string[] }) {
             <ChevronRight className="size-4 shrink-0 text-neutral-500" />
             <Link
               href={`/${nodeUrlPath}`}
-              className={`cursor-pointer hover:text-neutral-300 ${
-                index + 1 === paths.length ? "truncate" : ""
-              }`}
+              className={`cursor-pointer hover:text-neutral-100 ${
+                index + 1 === paths.length
+                  ? "text-neutral-500 pointer-events-none"
+                  : "text-neutral-300"
+              } ${index + 1 === paths.length ? "truncate" : ""}`}
             >
               {node ? node.name : paths[index].split("-").join(" ")}
             </Link>
