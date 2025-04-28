@@ -1,6 +1,13 @@
 "use client";
 
+import { FileTreeContext } from "@/contexts/FileTreeContext";
 import { defaultEditorContent } from "@/lib/content";
+import {
+  findNodeByUrlPath,
+  getNoteContent,
+  getPathFromNode,
+  saveNoteContent,
+} from "@/lib/file-management";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import {
   BubbleMenu,
@@ -12,13 +19,8 @@ import {
 import StarterKit from "@tiptap/starter-kit";
 import "highlight.js/styles/github-dark.css";
 import { common, createLowlight } from "lowlight";
-import { useState } from "react";
-import {
-  RxCode,
-  RxFontBold,
-  RxFontItalic,
-  RxStrikethrough,
-} from "react-icons/rx";
+import { Bold, Code, Italic, Strikethrough } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { BubbleButton } from "./bubble-button";
 
@@ -33,29 +35,46 @@ const extensions = [
 ];
 
 export function TextEditor({ path }: { path: string }) {
-  const initialContent = () => {
-    let data;
-    if (typeof window !== "undefined") {
-      let localStorageContent = localStorage.getItem(
-        `notes_${path}-editor-content`
-      );
-      data = localStorageContent ? JSON.parse(localStorageContent) : undefined;
+  const { fileTree } = useContext(FileTreeContext);
+  const [actualPath, setActualPath] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const node = findNodeByUrlPath(fileTree, path);
+
+    if (node) {
+      setActualPath(getPathFromNode(node));
+    } else {
+      setActualPath(path);
     }
-    if (!data) return defaultEditorContent;
-    return data;
+  }, [path]);
+
+  const initialContent = () => {
+    if (typeof window === "undefined") return defaultEditorContent;
+
+    if (!actualPath) return defaultEditorContent;
+
+    const noteContent = getNoteContent(actualPath || path);
+    return noteContent || defaultEditorContent;
   };
 
-  const [content] = useState<JSONContent>(initialContent);
+  const [content, setContent] = useState<JSONContent>(defaultEditorContent);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [charsCount, setCharsCount] = useState(0);
+
+  useEffect(() => {
+    if (actualPath) {
+      setContent(initialContent());
+    }
+  }, [actualPath, path]);
 
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
       const json = editor.getJSON();
-      localStorage.setItem(
-        `notes_${path}-editor-content`,
-        JSON.stringify(json)
-      );
+
+      const pathToUse = actualPath || path;
+      saveNoteContent(pathToUse, json);
       setSaveStatus("saved");
     },
     500
@@ -66,31 +85,36 @@ export function TextEditor({ path }: { path: string }) {
     immediatelyRender: false,
     content,
     onUpdate({ editor }) {
-      // Save content to new file/db
       setSaveStatus("unsaved");
       setCharsCount(editor.getText().length);
       debouncedUpdates(editor);
     },
     editorProps: {
       attributes: {
-        class: "focus:outline-hidden h-screen",
+        class: "focus:outline-hidden py-2",
       },
     },
   });
 
+  useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content);
+    }
+  }, [editor, content]);
+
   return (
-    <section className="h-full overflow-auto">
+    <section className="overflow-auto">
       <EditorContent
         editor={editor}
-        className="prose prose-invert mx-auto max-w-(--breakpoint-lg) pt-4"
+        className="prose prose-invert mx-auto max-w-(--breakpoint-lg)"
       />
-      <div className="absolute right-5 top-5 z-10 rounded-lg border border-neutral-700 text-neutral-500 px-2 py-1 text-sm ">
+      <div className="absolute right-8 top-8 z-10 italic text-neutral-500 text-sm">
         {saveStatus}
       </div>
       <div
         className={
           charsCount
-            ? "absolute bottom-5 text-neutral-500 right-5 text-sm"
+            ? "absolute bottom-5 text-neutral-500 right-16 text-sm"
             : "hidden"
         }
       >
@@ -98,32 +122,32 @@ export function TextEditor({ path }: { path: string }) {
       </div>
       {editor && (
         <BubbleMenu
-          className="flex divide-x divide-white/30 overflow-hidden rounded-md border border-white/30 bg-[#1F2428] shadow-lg shadow-black/20"
+          className="flex divide-x divide-white/30 overflow-hidden rounded-md border border-white/30 bg-neutral-900 shadow-lg shadow-black/20 [&_button]:p-2"
           editor={editor}
         >
           <BubbleButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             data-active={editor.isActive("bold")}
           >
-            <RxFontBold className="h-4 w-4" />
+            <Bold className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             data-active={editor.isActive("italic")}
           >
-            <RxFontItalic className="h-4 w-4" />
+            <Italic className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
             data-active={editor.isActive("strike")}
           >
-            <RxStrikethrough className="h-4 w-4" />
+            <Strikethrough className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             data-active={editor.isActive("codeBlock")}
           >
-            <RxCode className="h-4 w-4" />
+            <Code className="size-4" />
           </BubbleButton>
         </BubbleMenu>
       )}
