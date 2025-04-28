@@ -12,9 +12,16 @@ A simple markdown notes app. Portable, self-hosted, (hopefully soon) multi-platf
 
 ### Preview
 
+### v0.1
+
 ![](https://github.com/pdrmenezes/notes/blob/main/public/ss-1.webp)
 
+### v0.2
+
+![](https://github.com/pdrmenezes/notes/blob/main/public/ss-2.webp)
+
 ### Motivation
+
 Just wanted to own my notes, access them anywhere with a simple UI.
 
 ### To do
