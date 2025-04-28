@@ -4,9 +4,19 @@ import { FileTreeContext } from "@/contexts/FileTreeContext";
 import { createFile, createFolder } from "@/lib/file-management";
 import { CopyMinus, FilePlus2, FolderPlus, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Dialog, DialogState } from "./dialog";
 import { FileNode } from "./file-node";
+import { SearchInput } from "./search-input";
+
+const getInitialRootFoldersOpen = (fileTree: FileNode[]) => {
+  return fileTree.reduce((acc: Record<number, boolean>, node) => {
+    if (node.isDirectory) {
+      acc[node.id] = false;
+    }
+    return acc;
+  }, {});
+};
 
 export function Sidebar() {
   const { fileTree, updateFileTree } = useContext(FileTreeContext);
@@ -15,6 +25,10 @@ export function Sidebar() {
     type: null,
     inputValue: "",
   });
+  const [rootFoldersOpen, setRootFoldersOpen] = useState<
+    Record<number, boolean>
+  >(getInitialRootFoldersOpen(fileTree));
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
   const handleNewFile = () => {
@@ -34,6 +48,42 @@ export function Sidebar() {
       updateFileTree(newTree);
     }
   };
+
+  const handleCollapseFolders = () => {
+    if (isAnyFolderOpen) {
+      setRootFoldersOpen((prev) => {
+        const newRootFoldersOpen = { ...prev };
+        Object.keys(prev).forEach((key) => {
+          newRootFoldersOpen[Number(key)] = false;
+        });
+        return newRootFoldersOpen;
+      });
+    }
+  };
+
+  const isAnyFolderOpen = Object.values(rootFoldersOpen).some((open) => open);
+
+  const filteredFileTree = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return fileTree;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+
+    const nodeMatchesSearch = (node: FileNode): boolean => {
+      if (node.name.toLowerCase().includes(query)) {
+        return true;
+      }
+
+      if (node.isDirectory && node.nodes) {
+        return node.nodes.some(nodeMatchesSearch);
+      }
+
+      return false;
+    };
+
+    return fileTree.filter(nodeMatchesSearch);
+  }, [fileTree, searchQuery]);
 
   return (
     <aside className="h-full border-r border-r-neutral-700 pb-4 pl-8 pr-4 pt-8 font-mono">
@@ -67,33 +117,32 @@ export function Sidebar() {
               <button
                 title="Collapse folders"
                 className="rounded-md border border-neutral-500 bg-transparent p-2 text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300 hover:border-neutral-400 transition-colors duration-150"
-                // TODO: collapse folders
-                // onClick={handleCollapseAll}
+                onClick={handleCollapseFolders}
               >
                 <CopyMinus className="size-3.5" />
               </button>
             </div>
           </div>
-          <form id="search-form" role="search">
-            {/* TODO: filter folders & files */}
-            <input
-              id="q"
-              className="w-full rounded-xs border-b border-neutral-500 bg-transparent p-1 text-sm hover:border-neutral-400 focus-within:border-neutral-400 focus:outline-none transition-colors duration-150"
-              aria-label="Search contacts"
-              placeholder="Search"
-              type="search"
-              name="q"
-            />
-          </form>
+
+          <SearchInput value={searchQuery} onChange={setSearchQuery} />
         </div>
 
         <div className="flex flex-col gap-4">
           <ul id="file-list" className="flex flex-col gap-1.5">
-            {!fileTree.length && (
-              <p className="italic text-neutral-500">No files yet.</p>
+            {!filteredFileTree.length && (
+              <p className="italic text-neutral-500">
+                {searchQuery
+                  ? "No matching files or folders found."
+                  : "No files yet."}
+              </p>
             )}
-            {fileTree.map((node) => (
-              <FileNode fileNode={node} key={node.id} />
+            {filteredFileTree.map((node) => (
+              <FileNode
+                fileNode={node}
+                key={node.id}
+                rootFoldersOpen={rootFoldersOpen}
+                setRootFoldersOpen={setRootFoldersOpen}
+              />
             ))}
           </ul>
         </div>
