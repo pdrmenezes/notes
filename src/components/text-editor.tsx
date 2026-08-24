@@ -10,12 +10,13 @@ import {
 } from "@/lib/file-management";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import {
-  BubbleMenu,
   EditorContent,
   Editor as EditorInstance,
   JSONContent,
   useEditor,
+  useEditorState,
 } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import "highlight.js/styles/github-dark.css";
 import { common, createLowlight } from "lowlight";
@@ -77,7 +78,7 @@ export function TextEditor({ path }: { path: string }) {
       saveNoteContent(pathToUse, json);
       setSaveStatus("saved");
     },
-    500
+    500,
   );
 
   const editor = useEditor({
@@ -98,9 +99,29 @@ export function TextEditor({ path }: { path: string }) {
 
   useEffect(() => {
     if (editor && content) {
-      editor.commands.setContent(content);
+      editor.commands.setContent(content, { emitUpdate: false });
     }
   }, [editor, content]);
+
+  const editorState = useEditorState({
+    editor,
+    selector: ({ editor }) => {
+      if (!editor) {
+        return {
+          isBold: false,
+          isItalic: false,
+          isStrike: false,
+          isCodeBlock: false,
+        };
+      }
+      return {
+        isBold: editor.isActive("bold"),
+        isItalic: editor.isActive("italic"),
+        isStrike: editor.isActive("strike"),
+        isCodeBlock: editor.isActive("codeBlock"),
+      };
+    },
+  });
 
   return (
     <section className="overflow-auto">
@@ -124,28 +145,32 @@ export function TextEditor({ path }: { path: string }) {
         <BubbleMenu
           className="flex divide-x divide-white/30 overflow-hidden rounded-md border border-white/30 bg-neutral-900 shadow-lg shadow-black/20 [&_button]:p-2"
           editor={editor}
+          options={{
+            placement: "top",
+            offset: 6,
+          }}
         >
           <BubbleButton
             onClick={() => editor.chain().focus().toggleBold().run()}
-            data-active={editor.isActive("bold")}
+            data-active={editorState?.isBold}
           >
             <Bold className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            data-active={editor.isActive("italic")}
+            data-active={editorState?.isItalic}
           >
             <Italic className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            data-active={editor.isActive("strike")}
+            data-active={editorState?.isStrike}
           >
             <Strikethrough className="size-4" />
           </BubbleButton>
           <BubbleButton
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            data-active={editor.isActive("codeBlock")}
+            data-active={editorState?.isCodeBlock}
           >
             <Code className="size-4" />
           </BubbleButton>
